@@ -2,8 +2,322 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=support.html">
-<title>Mixlings</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mixlings: Cozy Color Garden</title>
+<meta name="description" content="Mixlings is a cozy color-mixing puzzle game. Swipe clay mixlings together to make new colors across 100 levels and a free Daily puzzle.">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+  :root {
+    --cream: #fbf5ec;
+    --paper: #fffaf2;
+    --ink: #3d2a1c;
+    --soft: #7a6352;
+    --wood: #a0622f;
+    --wood-dk: #5a3519;
+    --green: #39b54a;
+    --green-dk: #1f7a2c;
+    --line: #ecdfcc;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--cream); color: var(--ink); font: 17px/1.6 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  img { display: block; max-width: 100%; }
+  a { color: var(--wood); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .disp { font-family: 'Lilita One', 'Fredoka', sans-serif; font-weight: 400; letter-spacing: 0.01em; }
+
+  /* Top: no bar, just the icon and links floating over the top of the scene. */
+  header.bar { position: absolute; top: 0; left: 0; right: 0; z-index: 10; }
+  header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 76px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--wood-dk); font-size: 22px; background: rgba(255, 250, 242, 0.82); padding: 5px 16px 5px 5px; border-radius: 999px; }
+  .brand img { width: 36px; height: 36px; border-radius: 50%; }
+  nav.links { display: flex; gap: 6px; font-weight: 800; font-size: 15px; }
+  nav.links a { color: var(--wood-dk); text-decoration: none; background: rgba(255, 250, 242, 0.82); padding: 7px 14px; border-radius: 999px; }
+  nav.links a:hover { background: #fff; }
+
+  /* Hero */
+  .hero { position: relative; overflow: hidden; }
+  .hero-art { width: 100%; aspect-ratio: 2000 / 989; object-fit: cover; }
+  .hero-fade { position: absolute; inset: auto 0 0 0; height: 30%; background: linear-gradient(rgba(251,245,236,0), var(--cream)); }
+  .hero-copy { text-align: center; margin-top: -40px; position: relative; }
+  .hero-copy h1 { font-size: clamp(34px, 5vw, 56px); line-height: 1.05; margin: 0 0 12px; color: var(--wood-dk); }
+  .hero-copy p { font-size: clamp(17px, 2vw, 20px); color: var(--soft); max-width: 620px; margin: 0 auto 28px; }
+  .stores { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .store { display: inline-flex; align-items: center; gap: 12px; background: #1d1611; color: #fff; text-decoration: none; padding: 10px 22px 10px 18px; border-radius: 14px; min-width: 196px; box-shadow: 0 4px 0 rgba(0,0,0,0.18); transition: transform .15s; }
+  .store:hover { transform: translateY(-2px); }
+  .store svg { width: 28px; height: 28px; flex: none; }
+  .store small { display: block; font-size: 11px; opacity: 0.75; line-height: 1.1; letter-spacing: 0.02em; }
+  .store b { display: block; font-size: 20px; line-height: 1.15; font-weight: 700; }
+  .store.soon { background: #fff; color: var(--wood-dk); border: 2px solid var(--line); box-shadow: none; }
+  .meta { margin-top: 18px; color: var(--soft); font-size: 14px; }
+
+  section { padding: 88px 0; }
+  .kicker { text-transform: uppercase; letter-spacing: 0.16em; font-size: 13px; font-weight: 800; color: var(--wood); margin: 0 0 8px; text-align: center; }
+  h2.title { font-size: clamp(30px, 4vw, 42px); line-height: 1.1; margin: 0 0 16px; text-align: center; color: var(--wood-dk); }
+  .lead { text-align: center; color: var(--soft); max-width: 620px; margin: 0 auto 48px; }
+
+  /* How it plays: three recipes */
+  .recipes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .recipe { background: var(--paper); border: 1px solid var(--line); border-radius: 24px; padding: 28px 18px 22px; text-align: center; }
+  .eq { display: flex; align-items: flex-end; justify-content: center; gap: 6px; height: 104px; }
+  .eq img { height: 72px; width: auto; }
+  .eq img.made { height: 100px; }
+  .eq span { font-family: 'Lilita One', sans-serif; font-size: 26px; color: #c0a789; padding-bottom: 22px; }
+  .recipe h3 { margin: 14px 0 2px; font-size: 22px; color: var(--wood-dk); }
+  .recipe p { margin: 0; color: var(--soft); font-size: 15px; }
+  .rule { margin: 32px auto 0; max-width: 640px; background: #3a2a1f; color: #f8eedf; border-radius: 18px; padding: 16px 22px; display: flex; gap: 16px; align-items: center; }
+  .rule img { height: 56px; width: auto; flex: none; }
+  .rule b { color: #f7c95a; }
+
+  /* Screens */
+  .screens-band { background: linear-gradient(#f3e7d4, var(--cream)); }
+  .screens { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .phone { background: #1d1611; border-radius: 34px; padding: 8px; box-shadow: 0 20px 40px rgba(90, 53, 25, 0.18); }
+  .phone img { border-radius: 27px; width: 100%; }
+  .screens figcaption { text-align: center; margin-top: 14px; font-weight: 800; color: var(--wood-dk); }
+  .screens figure { margin: 0; }
+  .screens figure:nth-child(even) { margin-top: 36px; }
+
+  /* Features */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .feature { background: var(--paper); border: 1px solid var(--line); border-radius: 22px; padding: 24px; display: flex; gap: 16px; }
+  .feature img { height: 60px; width: auto; flex: none; align-self: flex-start; }
+  .feature h3 { margin: 0 0 4px; font-size: 18px; color: var(--wood-dk); }
+  .feature p { margin: 0; color: var(--soft); font-size: 15px; line-height: 1.5; }
+
+  /* The Book */
+  .shelf { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 4px; max-width: 900px; margin: 0 auto; }
+  .shelf figure { margin: 0; width: 120px; text-align: center; }
+  .shelf img { height: 84px; width: auto; margin: 0 auto; transition: transform .2s; }
+  .shelf figure:hover img { transform: translateY(-6px) rotate(-3deg); }
+  .shelf figcaption { font-weight: 800; font-size: 14px; color: var(--soft); margin-top: 6px; }
+  .shelf .muddle figcaption { color: #a08a76; }
+
+  /* Price card */
+  .deal { background: var(--wood-dk); color: #fbeedb; border-radius: 32px; padding: 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+  .deal h2 { color: #fff; text-align: left; margin: 0 0 12px; font-size: clamp(28px, 3.4vw, 38px); }
+  .deal ul { list-style: none; padding: 0; margin: 0; }
+  .deal li { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.12); display: flex; justify-content: space-between; gap: 16px; }
+  .deal li:last-child { border-bottom: 0; }
+  .deal li b { color: #f7c95a; white-space: nowrap; }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--line); padding: 40px 0 56px; color: var(--soft); font-size: 15px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; align-items: center; }
+  footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
+  footer a { color: var(--soft); }
+
+
+  /* Motion: the mixlings idle like they do in the game, recipes mix when they scroll in,
+     sections rise into place. All of it stops for people who ask for less motion. */
+  @keyframes bob { 0%, 100% { transform: translateY(0) scaleY(1); } 45% { transform: translateY(-5px) scaleY(1.03); } 55% { transform: translateY(-5px) scaleY(1.03); } }
+  @keyframes squish { 0%, 100% { transform: scale(1, 1); } 30% { transform: scale(1.08, 0.9); } 60% { transform: scale(0.95, 1.06); } }
+  @keyframes pop { 0% { transform: scale(0.2); opacity: 0; } 70% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes slideL { 0%, 100% { transform: translateX(0); } 45% { transform: translateX(10px) scale(1.06, 0.94); } }
+  @keyframes slideR { 0%, 100% { transform: translateX(0); } 45% { transform: translateX(-10px) scale(1.06, 0.94); } }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  .shelf img, .feature img, .rule img { transform-origin: 50% 100%; animation: bob 3.2s ease-in-out infinite; }
+  .shelf figure:nth-child(3n+1) img { animation-delay: -0.4s; }
+  .shelf figure:nth-child(3n+2) img { animation-delay: -1.3s; animation-duration: 3.7s; }
+  .shelf figure:nth-child(4n) img { animation-delay: -2.1s; animation-duration: 2.9s; }
+  .shelf figure:hover img { animation: squish 0.5s ease-in-out; }
+  .feature:nth-child(odd) img { animation-delay: -1.6s; }
+  .eq img { transform-origin: 50% 100%; }
+  .recipe.mixing .eq img:nth-of-type(1) { animation: slideL 0.6s ease-in-out 0.2s; }
+  .recipe.mixing .eq img:nth-of-type(2) { animation: slideR 0.6s ease-in-out 0.2s; }
+  .recipe .eq img.made { opacity: 0; }
+  .recipe.mixing .eq img.made { animation: pop 0.55s cubic-bezier(.3,1.6,.5,1) 0.65s both, bob 3.2s ease-in-out 1.4s infinite; }
+  .recipe:nth-child(2).mixing .eq img:not(.made) { animation-delay: 0.45s; }
+  .recipe:nth-child(2).mixing .eq img.made { animation-delay: 0.9s, 1.6s; }
+  .recipe:nth-child(3).mixing .eq img:not(.made) { animation-delay: 0.7s; }
+  .recipe:nth-child(3).mixing .eq img.made { animation-delay: 1.15s, 1.9s; }
+  .screens figure .phone { animation: float 6s ease-in-out infinite; }
+  .screens figure:nth-child(2) .phone { animation-delay: -1.5s; }
+  .screens figure:nth-child(3) .phone { animation-delay: -3s; }
+  .screens figure:nth-child(4) .phone { animation-delay: -4.5s; }
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  .store:active { transform: scale(0.97); }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+    .recipe .eq img.made { opacity: 1; }
+  }
+
+  @media (max-width: 860px) {
+    .recipes, .features { grid-template-columns: 1fr; }
+    .screens { grid-template-columns: repeat(2, 1fr); }
+    .screens figure:nth-child(even) { margin-top: 0; }
+    .deal { grid-template-columns: 1fr; padding: 32px 24px; }
+    nav.links { display: none; }
+    section { padding: 64px 0; }
+  }
+  @media (max-width: 480px) {
+    /* The wide scene is all greenhouse at this size: crop in on the crowd and the sign. */
+    .hero-art { aspect-ratio: 5 / 4; object-position: 50% 40%; }
+    .wrap { padding: 0 16px; }
+    .hero-copy { margin-top: -12px; }
+    .store { min-width: 0; width: 100%; justify-content: center; }
+    .shelf figure { width: 96px; }
+  }
+</style>
 </head>
-<body><a href="support.html">Mixlings Support</a></body>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand disp" href="./"><img src="img/icon.jpg" alt="">Mixlings</a>
+    <nav class="links">
+      <a href="#play">How it plays</a>
+      <a href="#screens">Screens</a>
+      <a href="#book">Mixling Book</a>
+      <a href="support.html">Support</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <img class="hero-art" src="img/hero.jpg" alt="A crowd of clay mixlings above the Mixlings sign in a sunny greenhouse">
+  <div class="hero-fade"></div>
+</div>
+<div class="hero-copy wrap">
+  <h1 class="disp">A cozy color-mixing puzzle</h1>
+  <p>Swipe little clay mixlings into each other to make new colors. Fill the orders, meet all fourteen, and solve a fresh Daily every morning.</p>
+  <div class="stores">
+    <a class="store" href="https://apps.apple.com/app/id6829254689">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.02-1.5-2.62-1.7-3.19-1.72-1.36-.14-2.65.8-3.34.8-.69 0-1.75-.78-2.88-.76-1.48.02-2.85.86-3.61 2.19-1.54 2.67-.39 6.62 1.11 8.79.73 1.06 1.6 2.25 2.75 2.2 1.1-.04 1.52-.71 2.85-.71 1.33 0 1.71.71 2.88.69 1.19-.02 1.94-1.08 2.66-2.15.84-1.23 1.19-2.42 1.21-2.48-.03-.01-2.32-.89-2.32-3.54zM14.18 6.13c.61-.74 1.02-1.76.91-2.78-.88.04-1.94.59-2.57 1.32-.56.65-1.06 1.69-.93 2.69.98.08 1.98-.5 2.59-1.23z"/></svg>
+      <span><small>Download on the</small><b>App Store</b></span>
+    </a>
+    <a class="store soon" href="#" aria-disabled="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#34a853" d="M3.6 2.2 13.4 12l-9.8 9.8c-.36-.2-.6-.6-.6-1.07V3.27c0-.47.24-.87.6-1.07z"/><path fill="#fbbc04" d="m16.7 15.3-3.3-3.3 3.3-3.3 3.72 2.12c.86.49.86 1.73 0 2.22z"/><path fill="#ea4335" d="M13.4 12 3.6 21.8c.36.2.82.21 1.22-.01l11.88-6.5z"/><path fill="#4285f4" d="M16.7 8.7 4.82 2.21c-.4-.22-.86-.21-1.22-.01L13.4 12z"/></svg>
+      <span><small>Coming soon to</small><b>Google Play</b></span>
+    </a>
+  </div>
+  <p class="meta">Free to start · No ads · No tracking · Plays offline</p>
+</div>
+
+<section id="play">
+  <div class="wrap">
+    <p class="kicker">How it plays</p>
+    <h2 class="title disp">Mix them. Keep them.</h2>
+    <p class="lead">Every mixling is a color. Swipe one into its neighbor and they mix for good, so plan your moves, serve the orders pinned above the board, and keep the clashing colors apart.</p>
+    <div class="recipes">
+      <div class="recipe">
+        <div class="eq"><img src="img/m-red.png" alt="Cherry"><span>+</span><img src="img/m-yellow.png" alt="Lemon"><span>=</span><img class="made" src="img/m-orange.png" alt="Orange"></div>
+        <h3 class="disp">Orange Fizz</h3>
+        <p>Cherry and Lemon</p>
+      </div>
+      <div class="recipe">
+        <div class="eq"><img src="img/m-yellow.png" alt="Lemon"><span>+</span><img src="img/m-blue.png" alt="Blueberry"><span>=</span><img class="made" src="img/m-green.png" alt="Lime"></div>
+        <h3 class="disp">Lime Soda</h3>
+        <p>Lemon and Blueberry</p>
+      </div>
+      <div class="recipe">
+        <div class="eq"><img src="img/m-red.png" alt="Cherry"><span>+</span><img src="img/m-blue.png" alt="Blueberry"><span>=</span><img class="made" src="img/m-purple.png" alt="Plum"></div>
+        <h3 class="disp">Plum Punch</h3>
+        <p>Cherry and Blueberry</p>
+      </div>
+    </div>
+    <div class="rule">
+      <img src="img/m-black.png" alt="Mud">
+      <div>Mix the wrong colors and you get a muddle: <b>Burnt</b>, <b>Dishwater</b>, and finally <b>Mud</b>, which is stuck for good.</div>
+    </div>
+  </div>
+</section>
+
+<section id="screens" class="screens-band">
+  <div class="wrap">
+    <p class="kicker">A peek inside</p>
+    <h2 class="title disp">One greenhouse, seven corners</h2>
+    <p class="lead">100 hand-tuned levels from The Bench to The Glasshouse, each world with its own twist.</p>
+    <div class="screens">
+      <figure><div class="phone"><img src="img/1-title.jpg" alt="Title screen with the mixling crowd"></div><figcaption>Meet the crowd</figcaption></figure>
+      <figure><div class="phone"><img src="img/2-level.jpg" alt="A level in play with three orders"></div><figcaption>Fill the orders</figcaption></figure>
+      <figure><div class="phone"><img src="img/3-map.jpg" alt="The map of pots along a garden path"></div><figcaption>Grow the garden</figcaption></figure>
+      <figure><div class="phone"><img src="img/4-book.jpg" alt="The Mixling Book with every mixling in a pot"></div><figcaption>Fill the Book</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">Why you'll like it</p>
+    <h2 class="title disp">Made to be cozy</h2>
+    <p class="lead">Short, thoughtful puzzles you can play with a cup of tea.</p>
+    <div class="features">
+      <div class="feature"><img src="img/m-amber.png" alt=""><div><h3>A Daily every day</h3><p>One new board each morning, the same for everyone. Keep your streak growing.</p></div></div>
+      <div class="feature"><img src="img/m-teal.png" alt=""><div><h3>No timers</h3><p>Think as long as you like. Gentle music and happy chatter keep you company.</p></div></div>
+      <div class="feature"><img src="img/m-magenta.png" alt=""><div><h3>Garden tools</h3><p>A sponge, a dye can and a shovel to get you out of a tight spot.</p></div></div>
+      <div class="feature"><img src="img/m-olive.png" alt=""><div><h3>Colorblind friendly</h3><p>Every mixling has its own shape and face, not just a color.</p></div></div>
+      <div class="feature"><img src="img/m-indigo.png" alt=""><div><h3>Plays offline</h3><p>No account, no ads, no tracking. Your progress stays on your device.</p></div></div>
+      <div class="feature"><img src="img/m-slate.png" alt=""><div><h3>Every mix is permanent</h3><p>Easy to learn, with real decisions on every swipe.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="book" class="screens-band">
+  <div class="wrap">
+    <p class="kicker">The Mixling Book</p>
+    <h2 class="title disp">Fourteen to meet</h2>
+    <p class="lead">Every color you mix moves into a pot of its own. Can you find them all?</p>
+    <div class="shelf">
+      <figure><img src="img/m-red.png" alt=""><figcaption>Cherry</figcaption></figure>
+      <figure><img src="img/m-yellow.png" alt=""><figcaption>Lemon</figcaption></figure>
+      <figure><img src="img/m-blue.png" alt=""><figcaption>Blueberry</figcaption></figure>
+      <figure><img src="img/m-orange.png" alt=""><figcaption>Orange</figcaption></figure>
+      <figure><img src="img/m-green.png" alt=""><figcaption>Lime</figcaption></figure>
+      <figure><img src="img/m-purple.png" alt=""><figcaption>Plum</figcaption></figure>
+      <figure><img src="img/m-amber.png" alt=""><figcaption>Marmalade</figcaption></figure>
+      <figure><img src="img/m-teal.png" alt=""><figcaption>Mint</figcaption></figure>
+      <figure><img src="img/m-olive.png" alt=""><figcaption>Basil</figcaption></figure>
+      <figure><img src="img/m-indigo.png" alt=""><figcaption>Blackberry</figcaption></figure>
+      <figure><img src="img/m-magenta.png" alt=""><figcaption>Raspberry</figcaption></figure>
+      <figure class="muddle"><img src="img/m-brown.png" alt=""><figcaption>Burnt</figcaption></figure>
+      <figure class="muddle"><img src="img/m-slate.png" alt=""><figcaption>Dishwater</figcaption></figure>
+      <figure class="muddle"><img src="img/m-black.png" alt=""><figcaption>Mud</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="deal">
+      <div>
+        <h2 class="disp">Free to start. One purchase, no surprises.</h2>
+        <p>Play the first two worlds and the Daily for free. If you love it, the Full Garden opens everything else, and it's yours to keep.</p>
+      </div>
+      <ul>
+        <li><span>The Bench and The Shelf, levels 1–25</span><b>Free</b></li>
+        <li><span>The Daily puzzle</span><b>Free</b></li>
+        <li><span>Full Garden: five more worlds, levels 26–100</span><b>One purchase</b></li>
+        <li><span>Ads, subscriptions, energy timers</span><b>None</b></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 AA Codes LLC · Miami, FL</div>
+    <nav>
+      <a href="support.html">Support</a>
+      <a href="privacy.html">Privacy policy</a>
+      <a href="mailto:support@aacodes.com">support@aacodes.com</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  // Sections rise in as they scroll into view; a recipe mixes the first time it does.
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      e.target.classList.add(e.target.classList.contains('recipe') ? 'mixing' : 'in');
+      io.unobserve(e.target);
+    }
+  }, { threshold: 0.25 });
+  document.querySelectorAll('section .title, section .lead, .feature, .deal, .shelf, .screens figure').forEach((el) => { el.classList.add('reveal'); io.observe(el); });
+  document.querySelectorAll('.recipe').forEach((el) => io.observe(el));
+</script>
+</body>
 </html>
